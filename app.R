@@ -328,10 +328,6 @@ calculRentabilite <- function(loyer_potentiel_hors_charge, charges_demandees_au_
   return(rentabilite_nette)
 }
 
-
-
-
-
 ################################################################################
 
 creerDatasetCashflow <- function(loyer_potentiel_hors_charge, charges_demandees_au_locataire,
@@ -418,18 +414,19 @@ creerDatasetCashflow <- function(loyer_potentiel_hors_charge, charges_demandees_
                      TOTAL_SORTIES_MENSUELLES = total_sorties,
                      BENEFICE_MENSUEL = benefice_annuel,
                      REVENU_IMPOSABLE_ANNUEL = revenu_imposable,
-                     TAUX_IMPOSITION = taux,
+                     #TAUX_IMPOSITION = taux,
                      IMPOT_ANNUEL = impot,
                      CASHFLOW_MENSUEL = cashflow,
                      cout_total_investissement = cout_total_investissement,
-                     RENTABILITE_NETTE_ANNUELLE = rentabilite_nette)
+                     RENTABILITE_NETTE_ANNUELLE = paste0(round(rentabilite_nette * 100, 2), " %")
+  )
   
   
   # Transposition du dataframe
   resultat_dataset_transpose <- as.data.frame(t(data))
   
   # Définition des index des lignes à copier
-  indices <- c("TOTAL_ENTREES_MENSUELLES", "TAUX_IMPOSITION", "TOTAL_SORTIE_NONDEDUCTIBLE_MENSUELLES", "TOTAL_SORTIE_DEDUCTIBLE_MENSUELLES", 
+  indices <- c("TOTAL_ENTREES_MENSUELLES", "TOTAL_SORTIE_NON_DEDUCTIBLE_MENSUELLES", "TOTAL_SORTIE_DEDUCTIBLE_MENSUELLES", 
                "TOTAL_SORTIES_MENSUELLES", "BENEFICE_MENSUEL", "REVENU_IMPOSABLE_ANNUEL", "IMPOT_ANNUEL", "CASHFLOW_MENSUEL", 
                "RENTABILITE_NETTE_ANNUELLE")
   
@@ -484,45 +481,44 @@ ui <- fluidPage(
     tags$link(rel = "shortcut icon", href = "logo_immo.png", type = "image/png")
   ),
   div(
-    tags$img(src = "logo_immo.png", height = 50, style = "vertical-align:middle; margin-right: 10px;"),
+    tags$img(src = "logo_immo.png", height = 45, style = "vertical-align:middle; margin-right: 10px;"),
     style = "position: absolute; top: 15px; right: 15px;"
   ),
   
-  tags$h3(style = "color:blue; font-weight:bold;", "Optimisez vos investissements immobiliers meublés LMNP ! 💼"),
   tags$p(style = "font-weight:bold;", 
          "Découvrez la maîtrise ultime de vos investissements immobiliers grâce à notre outil dédié aux Loueurs en Meublé Non Professionnel (LMNP). 
          Notre calculateur vous guide à travers toutes les étapes clés d'un investissement LMNP, en vous fournissant des conseils et des ressources utiles. 
          Optimisez les bénéfices fiscaux du régime LMNP, estimez avec précision votre cashflow et la rentabilité de vos investissements, et faites des choix d'investissement éclairés. 
          De plus, nous vous conseillons des sites web fiables pour faciliter chaque étape de votre investissement. 
-         Avec notre outil, transformez des données complexes en décisions d'investissement éclairées et faites prospérer votre portefeuille immobilier. 🌟🏡"),
+         Avec notre outil, transformez des données complexes en décisions d'investissement éclairées et faites prospérer votre portefeuille immobilier."),
   
   tags$div(style = "font-family: Arial, sans-serif; margin: 20px;",
            
-           tags$h3(style = "color: #2a9df4;", "Dans quelle ville investir ? 🌍"),
+           tags$h3(style = "color: #2a9df4;", "Dans quelle ville investir ?"),
            
            tags$p(tags$strong("Objectif du bien :")),
            
            tags$ul(
              tags$li(tags$strong("Vérifiez la démographie locale :"), 
-                     " Choisissez une ville de plus de 20 000 habitants avec une croissance démographique positive. 📊"),
+                     " Choisissez une ville de plus de 20 000 habitants avec une croissance démographique positive."),
              tags$li(tags$strong("Localisation stratégique :"), 
-                     " Sélectionnez des villes avec une forte demande locative, à moins d’une heure de chez vous, dans des quartiers en développement. 🏙️"),
+                     " Sélectionnez des villes avec une forte demande locative, à moins d’une heure de chez vous, dans des quartiers en développement.️"),
              tags$li(tags$strong("Analyse économique :"), 
-                     " Recherchez des villes avec un faible taux de chômage et un fort taux d'activité. 💼"),
+                     " Recherchez des villes avec un faible taux de chômage et un fort taux d'activité."),
              tags$li(tags$strong("Tension locative :"), 
-                     " Assurez-vous que ", tags$strong("60 % ou plus"), " des habitants sont locataires pour garantir une demande stable. 📈"),
+                     " Assurez-vous que ", tags$strong("60 % ou plus"), " des habitants sont locataires pour garantir une demande stable."),
              tags$li(tags$strong("Ciblez les biens en demande :"), 
-                     " Studios et T2, généralement plus demandés dans les centres-villes. 🏢"),
+                     " Studios et T2, généralement plus demandés dans les centres-villes."),
              tags$li(tags$strong("Calcul du rendement locatif :"), 
-                     " Utilisez la formule : (Loyer mensuel x 12) / Prix d'achat x 100 et visez une rentabilité supérieure à 8 %. 💵"),
+                     " Utilisez la formule : (Loyer mensuel x 12) / Prix d'achat x 100 et visez une rentabilité supérieure à 8 %."),
              tags$li(tags$strong("Rentabilité et potentiel de croissance :"), 
-                     " Une rentabilité élevée attire davantage d’investisseurs, augmentant ainsi le potentiel des prix à si la ville se développe. 🚀"),
+                     " Une rentabilité élevée attire davantage d’investisseurs, augmentant ainsi le potentiel des prix à si la ville se développe."),
              tags$li(tags$strong("Test d'intérêt locatif :"), 
-                     " Publiez une annonce fictive pour tester la demande sur le type de bien que vous envisagez d’acheter. 🔍")
+                     " Publiez une annonce fictive pour tester la demande sur le type de bien que vous envisagez d’acheter.")
            ),
            
            tags$p("Vous ne savez pas où investir ?", 
-                  tags$strong("GPT peut vous orienter avec précision. 🤖💡"), 
+                  tags$strong("GPT peut vous orienter avec précision. 🤖"), 
                   " Utilisez ce prompt pour découvrir les meilleures villes selon vos critères.", 
                   tags$br(),
                   "De plus, vous pouvez recevoir directement à l'adresse ", 
@@ -551,9 +547,9 @@ ui <- fluidPage(
                            "Meilleurs Agents 🌐"))
            ),
            br(),
-           tags$li("🧮 ", HTML("<strong>BusinessTracker</strong>"), " pour apprendre à gérer vos finances personnelles. Vous pouvez retourner sur le simulateur d'intérêts composés : ", a("Simulateur d'intérêts composés", href="https://businesstracker.netlify.app/simulateurinteretscomposes")),
-           tags$li("💡 ", HTML("<strong>FinanceFinder</strong>"), " pour investir sur différentes classes d'actifs et prendre des décisions éclairées en fonction de vos objectifs financiers. Explorez vos options dès maintenant ici : ", a("Outil d'aide à la décision ", href="https://romtaugs.shinyapps.io/FinanceFinder/"))
-           
+           tags$li("📊 ", HTML("<strong>BusinessTracker</strong>"), " pour apprendre à gérer vos finances personnelles. Vous pouvez retourner sur le simulateur d'intérêts composés : ", a("Simulateur d'intérêts composés", href="https://businesstracker.netlify.app/simulateurinteretscomposes")),
+           tags$li("📈 ", HTML("<strong>FinanceFinder</strong>"), " pour investir sur différentes classes d'actifs et prendre des décisions éclairées en fonction de vos objectifs financiers. Explorez vos options dès maintenant ici : ", a("Outil d'aide à la décision", href="https://romtaugs.shinyapps.io/FinanceFinder/")),
+           tags$li("🏡 ", HTML("<strong>ÉcoReno-GRDF</strong>"), " pour simuler la rénovation énergétique de votre logement et découvrir les aides disponibles afin de garantir et améliorer votre DPE : ", a("Simulateur de rénovation", href="https://ecoreno-grdf.netlify.app/"))
   ),
   
   # JavaScript code for copying text to clipboard
@@ -598,19 +594,32 @@ ui <- fluidPage(
           p("Pour que l'investissement ", strong("LMNP"), " soit rentable, il est crucial de choisir le bon bien immobilier, dans l'idéal proche de chez vous pour simplifier la gestion. Cela peut être un ", strong("appartement"), ", une ", strong("maison"), ", une ", strong("résidence étudiante"), ", une ", strong("résidence de tourisme"), ", une ", strong("résidence pour personnes âgées"), ", etc. Le choix du bien dépend de vos objectifs et de votre budget. Utilisez des plateformes comme ", tags$a(href = "https://www.meilleursagents.com/", target = "_blank", "MeilleursAgents"), " ou ", tags$a(href = "https://www.seloger.com/", target = "_blank", "SeLoger"), " pour faciliter votre recherche."),
           
           h4("Étape 3 : Évaluer la rentabilité"),
-          p("Une fois le bien identifié, il est crucial d'évaluer ", strong("sa rentabilité"), ". Pour cela, vous pouvez utiliser un simulateur comme celui de ", tags$a(href = "https://www.meilleurtaux.com/", target = "_blank", "MeilleurTaux"), "."),
+          p("Une fois le bien identifié, il est crucial d'évaluer ", strong("sa rentabilité"), ". Pour cela, vous pouvez utiliser un simulateur comme celui de ", tags$a(href = "https://www.meilleurtaux.com/", target = "_blank", "MeilleurTaux"), ""),
           
           h4("Étape 4 : Acheter le bien immobilier"),
           p("Si le bien identifié correspond à ", strong("vos critères"), " et présente ", strong("une bonne rentabilité"), ", vous pouvez procéder à son achat. Il est recommandé de consulter un notaire pour vous accompagner dans cette démarche."),
           
           h4("Étape 5 : Meubler le bien"),
-          p("Pour bénéficier du régime ", strong("LMNP"), ", il faut que le bien soit ", strong("loué meublé"), ". Assurez-vous de fournir tous les meubles nécessaires pour permettre au locataire de vivre convenablement dans le logement. Pour l'ameublement, vous pouvez utiliser des sites comme ", tags$a(href = "https://www.geev.com/", target = "_blank", "GEEV"), ", ", tags$a(href = "https://www.leboncoin.fr/", target = "_blank", "LebonCoin"), " ou ", tags$a(href = "https://www.ikea.com/fr/fr/", target = "_blank", "Ikea"), "."),
-          
+          p("Pour bénéficier du régime ", strong("LMNP"), ", il faut que le bien soit ", strong("loué meublé"), ". Assurez-vous de fournir tous les meubles nécessaires pour permettre au locataire de vivre convenablement dans le logement. Pour l'ameublement, vous pouvez utiliser des sites comme ", tags$a(href = "https://www.geev.com/", target = "_blank", "GEEV"), ", ", tags$a(href = "https://www.leboncoin.fr/", target = "_blank", "LebonCoin"), " ou ", tags$a(href = "https://www.ikea.com/fr/fr/", target = "_blank", "Ikea"), ""),
+          p("Voici la liste minimale des équipements obligatoires selon le décret n°2015-981 :"),
+          tags$ul(
+            tags$li("Literie comprenant couette ou couverture"),
+            tags$li("Dispositif d'occultation des fenêtres dans les chambres (rideaux, volets)"),
+            tags$li("Plaques de cuisson"),
+            tags$li("Four ou four à micro-ondes"),
+            tags$li("Réfrigérateur avec compartiment congélateur ou congélateur séparé"),
+            tags$li("Vaisselle nécessaire pour la prise des repas (assiettes, verres, couverts, etc.)"),
+            tags$li("Ustensiles de cuisine (poêles, casseroles, spatules, etc.)"),
+            tags$li("Table et sièges"),
+            tags$li("Étagères de rangement"),
+            tags$li("Luminaires"),
+            tags$li("Matériel d'entretien ménager adapté au logement (aspirateur, balai, serpillère si nécessaire)")
+          ),
           h4("Étape 6 : Inscription au régime LMNP"),
-          p("Une fois le bien meublé, il faut vous ", strong("déclarer comme loueur en meublé non professionnel"), " auprès du greffe du tribunal de commerce de votre ville pour obtenir un ", strong("numéro SIRET"), "."),
+          p("Une fois le bien meublé, il faut vous ", strong("déclarer comme loueur en meublé non professionnel"), " auprès du greffe du tribunal de commerce de votre ville pour obtenir un ", strong("numéro SIRET"), ""),
           
           h4("Étape 7 : Trouver un locataire et gérer la location"),
-          p("Cela consiste à ", strong("trouver un locataire"), ", ", strong("gérer le bail"), ", ", strong("percevoir les loyers"), ", résoudre les éventuels problèmes, etc. Vous pouvez faire cela vous-même ou recourir aux services d'une société de gestion immobilière. Pour la location, vous pouvez utiliser des sites comme ", tags$a(href = "https://www.leboncoin.fr/", target = "_blank", "LebonCoin"), " ou ", tags$a(href = "https://www.seloger.com/", target = "_blank", "SeLoger"), "."),
+          p("Cela consiste à ", strong("trouver un locataire"), ", ", strong("gérer le bail"), ", ", strong("percevoir les loyers"), ", résoudre les éventuels problèmes, etc. Vous pouvez faire cela vous-même ou recourir aux services d'une société de gestion immobilière. Pour la location, vous pouvez utiliser des sites comme ", tags$a(href = "https://www.leboncoin.fr/", target = "_blank", "LebonCoin"), " ou ", tags$a(href = "https://www.seloger.com/", target = "_blank", "SeLoger"), ""),
           
           h4("Étape 8 : Déclaration fiscale"),
           p("Chaque année, il vous faudra déclarer vos ", strong("revenus locatifs"), " dans votre déclaration d'impôt sur le revenu. En fonction du régime choisi, ", strong("micro-BIC"), " ou ", strong("régime réel"), ", vous bénéficierez d'un ", strong("abattement forfaitaire de 50%"), " pour frais et charges, ou vous pourrez déduire vos charges réelles et ", strong("amortir votre bien et vos meubles"), ". Une fiche d'impôt vous sera envoyée une fois par an."),
@@ -741,7 +750,7 @@ ui <- fluidPage(
           p(tags$a(href = "https://www.meilleurtaux.com/comparateur-assurance/assurance-habitation/profil/proprietaire/assurance-pno.html", target = "_blank", class = "btn btn-primary btn-lg", "Simuler PNO")),
           #https://www.meilleurtaux.com/comparateur-assurance/assurance-habitation/profil/proprietaire/assurance-pno.html
           p("Note : Plus la durée du prêt est longue, plus les mensualités seront faibles. Toutefois, cela augmente également le coût total du prêt. Si les taux d'intérêt sont faibles, il y a plus de chances que votre ", strong("bien immobilier s'autofinance"), ". Cela signifie que les ", strong("revenus locatifs couvriront les mensualités du prêt ainsi que les autres dépenses"), ""),
-          p("La durée maximale pour un prêt immobilier en France est de ", strong("27 ans"), ".")
+          p("La durée maximale pour un prêt immobilier en France est de ", strong("27 ans"), "")
         ),
         
         
@@ -756,22 +765,22 @@ ui <- fluidPage(
           
           h3("Les entrées mensuelles"),
           numericInput("loyer_potentiel_hors_charge", strong("Loyer potentiel hors charge"), value = 800, min = 0),
-          numericInput("charges_demandees_au_locataire", strong("Charges demandées au locataire"), value = 0, min = 0),
+          numericInput("charges_demandees_au_locataire", strong("Charges demandées au locataire"), value = 50, min = 0),
           
           hr(),
           h3("Les sorties non déductibles"),
-          numericInput("remboursement_capital", strong("Remboursement de capital"), value = 0, min = 0),
-          numericInput("frais_de_notaire", strong("Frais de notaire"), value = 0, min = 0),
+          numericInput("remboursement_capital", strong("Remboursement de capital"), value = 400, min = 0),
+          numericInput("frais_de_notaire", strong("Frais de notaire (environ 8% du bien)"), value = 50, min = 0),
           numericInput("frais_et_hypotheque", strong("Frais et hypothèque"), value = 0, min = 0),
           
           hr(),
           h3("Les sorties déductibles mensuelles"),
-          numericInput("interets_emprunt", strong("Intérêts d'emprunt"), value = 600, min = 0),
-          numericInput("assurance_credit", strong("Assurance crédit"), value = 0, min = 0),
-          numericInput("taxe_fonciere", strong("Taxe foncière"), value = 0, min = 0),
+          numericInput("interets_emprunt", strong("Intérêts d'emprunt (environ 4% du capital emprunté"), value = 40, min = 0),
+          numericInput("assurance_credit", strong("Assurance crédit"), value = 20, min = 0),
+          numericInput("taxe_fonciere", strong("Taxe foncière"), value = 70, min = 0),
           numericInput("abonnement_electricite_gaz", strong("Abonnement Électricité/Gaz"), value = 0, min = 0),
           numericInput("charges_copropriete", strong("Charges de copropriété"), value = 0, min = 0),
-          numericInput("assurance_PNO", strong("Assurance PNO"), value = 0, min = 0),
+          numericInput("assurance_PNO", strong("Assurance PNO"), value = 25, min = 0),
           numericInput("abonnement_internet_TV", strong("Abonnement Internet/TV"), value = 0, min = 0),
           numericInput("cotisation_fonciere_entreprise", strong("Cotisation Foncière des Entreprises"), value = 0, min = 0),
           numericInput("frais_comptable", strong("Frais comptable"), value = 0, min = 0),
@@ -828,9 +837,9 @@ ui <- fluidPage(
             h4("1. Solvabilité financière"),
             p("Le locataire doit avoir des revenus stables et suffisants pour payer le loyer. Voici les indicateurs financiers à suivre :"),
             tags$ul(
-              tags$li("Revenu mensuel net : Le revenu du locataire doit être ", tags$strong("au moins 3 fois supérieur au loyer"), ". Par exemple, pour un loyer de ", tags$strong("800 €"), ", le locataire doit gagner au moins ", tags$strong("2 400 € net par mois"), "."),
+              tags$li("Revenu mensuel net : Le revenu du locataire doit être ", tags$strong("au moins 3 fois supérieur au loyer"), ". Par exemple, pour un loyer de ", tags$strong("800 €"), ", le locataire doit gagner au moins ", tags$strong("2 400 € net par mois"), ""),
               tags$li("Capacité d'endettement : Le locataire ne doit pas dépasser ", tags$strong("33 % d'endettement"), ". Cela inclut tous ses crédits (immobiliers, consommation, etc.)."),
-              tags$li("Garants : Si le locataire ne répond pas aux critères, un garant est nécessaire. Le garant doit avoir un revenu supérieur à ", tags$strong("3 fois le loyer"), ".")
+              tags$li("Garants : Si le locataire ne répond pas aux critères, un garant est nécessaire. Le garant doit avoir un revenu supérieur à ", tags$strong("3 fois le loyer"), "")
             ),
             
             # Stabilité professionnelle
@@ -889,7 +898,7 @@ ui <- fluidPage(
             # Historique locatif
             h4("4. Historique locatif"),
             tags$ul(
-              tags$li(tags$strong("Quittances de loyer des 3 derniers mois"), "."),
+              tags$li(tags$strong("Quittances de loyer des 3 derniers mois"), ""),
               tags$li(tags$strong("Lettre de recommandation"), " de l'ancien propriétaire (si possible).")
             ),
             
@@ -913,14 +922,14 @@ ui <- fluidPage(
             
             # Garantie locative
             h3("Étape 4 : Garantie Locative Visale", class = "section-heading"),
-            p("Pour sécuriser vos loyers, utilisez la garantie locative Visale. Cette garantie gratuite couvre les loyers impayés. Cependant, le locataire doit avoir des revenus supérieurs à ", tags$strong("3 fois le loyer hors charges"), "."),
+            p("Pour sécuriser vos loyers, utilisez la garantie locative Visale. Cette garantie gratuite couvre les loyers impayés. Cependant, le locataire doit avoir des revenus supérieurs à ", tags$strong("3 fois le loyer hors charges"), ""),
             p(tags$a(href = "https://www.visale.fr/", target = "_blank", class = "btn btn-primary btn-lg", "Découvrir Visale")),
             
             hr(),
             
             # Ressources supplémentaires
             p("Pour en savoir plus sur les documents légaux et la gestion locative, consultez : ", 
-              tags$a(href = "https://www.service-public.fr/particuliers/vosdroits/F1169", target = "_blank", "Service Public"), ".")
+              tags$a(href = "https://www.service-public.fr/particuliers/vosdroits/F1169", target = "_blank", "Service Public"), "")
           )
         )
         
@@ -974,7 +983,7 @@ server <- function(input, output, session) {
       regime <- if (input$choix == "1") "LMNP_reel" else "Micro_foncier"
       
       # Utiliser le nom du bien comme nom du fichier avec le type de régime
-      paste(input$nom_bien, "-comptabilité-", regime, "_", Sys.Date(), ".xlsx", sep = "")
+      paste(input$nom_bien, "_Comptabilité-", regime, "_", Sys.Date(), ".xlsx", sep = "")
     },
     content = function(file) {
       # Générer et afficher le dataset avant de le télécharger
@@ -1027,6 +1036,17 @@ server <- function(input, output, session) {
         
         # Écrire les données dans la feuille Excel
         writeData(wb, "Resultats", result_with_row_names)
+        writeData(wb, "Resultats", result_with_row_names, colWidths = "auto")
+        
+        numCols <- ncol(result_with_row_names)
+        numRows <- nrow(result_with_row_names) + 1
+        
+        # Sécurité sur les colonnes existantes
+        cols_money <- intersect(c(3:21, 23:25), 1:numCols)
+        cols_percent <- intersect(c(22, 26), 1:numCols)
+        
+        addStyle(wb, sheet = "Resultats", style = moneyStyle, rows = 2:numRows, cols = cols_money, gridExpand = TRUE)
+        addStyle(wb, sheet = "Resultats", style = percentStyle, rows = 2:numRows, cols = cols_percent, gridExpand = TRUE)
         
         # Nombre de lignes et colonnes du dataset
         numRows <- nrow(result_with_row_names) + 1  # Inclure l'en-tête
@@ -1175,7 +1195,7 @@ server <- function(input, output, session) {
   
   output$downloadData <- downloadHandler(
     filename = function() {
-      paste("Recherche d'appartemment-", Sys.Date(), ".xlsx", sep = "")
+      paste(input$nom_annonce, "_Recherche d'appartemment_", Sys.Date(), ".xlsx", sep = "")
     },
     content = function(file) {
       file.copy("H:/Desktop/Immo Gains/Recherche d'appartemment.xlsx", file)
@@ -1408,7 +1428,7 @@ server <- function(input, output, session) {
   output$downloadDataTxt <- downloadHandler(
     filename = function() {
       # Utiliser le nom de l'annonce entré par l'utilisateur pour nommer le fichier
-      paste(input$nom_annonce, "-etude-de-bien_", Sys.Date(), ".txt", sep = "")
+      paste(input$nom_annonce, "_Etude-de-bien_", Sys.Date(), ".txt", sep = "")
     },
     content = function(file) {
       # Récupérer les valeurs des calculs
@@ -1472,4 +1492,3 @@ server <- function(input, output, session) {
 }
 
 shinyApp(ui = ui, server = server)
-
