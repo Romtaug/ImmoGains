@@ -133,7 +133,7 @@ calculImpots <- function(choix, loyer_potentiel_hors_charge, charges_demandees_a
   } 
   else if (choix == "2") {
     # Dans le régime micro-BIC, l'impôt est calculé sur 50% du revenu brut
-    revenus_imposables <- total_entrees * 0.7
+    revenus_imposables <- total_entrees * 0.5
     #cat("Revenu imposable :", revenus_imposables)
     if (revenus_imposables < 0) {
       revenus_imposables <- 0
@@ -594,7 +594,7 @@ ui <- fluidPage(
           p("Pour que l'investissement ", strong("LMNP"), " soit rentable, il est crucial de choisir le bon bien immobilier, dans l'idéal proche de chez vous pour simplifier la gestion. Cela peut être un ", strong("appartement"), ", une ", strong("maison"), ", une ", strong("résidence étudiante"), ", une ", strong("résidence de tourisme"), ", une ", strong("résidence pour personnes âgées"), ", etc. Le choix du bien dépend de vos objectifs et de votre budget. Utilisez des plateformes comme ", tags$a(href = "https://www.meilleursagents.com/", target = "_blank", "MeilleursAgents"), " ou ", tags$a(href = "https://www.seloger.com/", target = "_blank", "SeLoger"), " pour faciliter votre recherche."),
           
           h4("Étape 3 : Évaluer la rentabilité"),
-          p("Une fois le bien identifié, il est crucial d'évaluer ", strong("sa rentabilité"), ". Pour cela, vous pouvez utiliser un simulateur comme celui de ", tags$a(href = "https://www.meilleurtaux.com/", target = "_blank", "MeilleurTaux"), ""),
+          p("Une fois le bien identifié, il est crucial d'évaluer ", strong("sa rentabilité"), ". Souvent Colocation > Petite surface > Grande surface, des travaux de rénovations ou de divisions peuvent donc améliorer la rentabilité d'un bien. Pour cela, vous pouvez utiliser un simulateur comme celui de ", tags$a(href = "https://www.meilleurtaux.com/", target = "_blank", "MeilleurTaux"), ""),
           
           h4("Étape 4 : Acheter le bien immobilier"),
           p("Si le bien identifié correspond à ", strong("vos critères"), " et présente ", strong("une bonne rentabilité"), ", vous pouvez procéder à son achat. Il est recommandé de consulter un notaire pour vous accompagner dans cette démarche."),
@@ -680,7 +680,7 @@ ui <- fluidPage(
           
           hr(),
           h3("Étape 4 : Rédigez l'offre d'achat !"),
-          p("Rédigez et transmettez l'", strong("offre d'achat"), " au vendeur, puis à votre notaire qui pourra organiser le ", strong("compromis de vente"), " contenant les clauses suspensives."),
+          p("Rédigez et transmettez l'", strong("offre d'achat"), " au vendeur, puis à votre notaire qui pourra organiser le ", strong("compromis de vente"), " contenant les clauses suspensives. Pour le suivi de votre placement nous vous conseillons d'ouvrir un livret bancaire spécialement pour la gestion du bien en question."),
           p(tags$a(href = "https://view.officeapps.live.com/op/view.aspx?src=https%3A%2F%2Fedito.seloger.com%2Fsites%2Fdefault%2Ffiles%2Fedito_migrate%2Farticle%2Fimage%2Flettre_offre_achat_immobilier_prix_inferieur_annonce.docx&wdOrigin=BROWSELINK", target = "_blank", class = "btn btn-primary btn-lg", "Accéder au modèle")),
           
           hr(),
@@ -831,8 +831,17 @@ ui <- fluidPage(
             h3("Étape 1 : Comment reconnaître un bon locataire ?", class = "section-heading"),
             
             # Introduction
-            p("Un bon locataire est celui qui respecte ses engagements, paie son loyer à temps, et prend soin du logement. Voici les principaux critères à vérifier, accompagnés de chiffres indicatifs pour garantir sa solvabilité :"),
-            
+            p(
+              "Un bon locataire est celui qui respecte ses engagements, paie son loyer à temps, et prend soin du logement. ",
+              "Voici les principaux critères à vérifier. Vous pouvez lui demander de remplir les formulaires nationaux permettant d'obtenir toutes les informations nécessaires comme le ",
+              a("dossier locataire sur DossierFacile", 
+                href = "https://www.service-public.fr/particuliers/vosdroits/R51424#:~:text=Cr%C3%A9ez%20votre%20compte%20sur%20DossierFacile.logement.gouv.fr%20pour%20compl%C3%A9ter%20votre,pour%20lui%20signaler%20la%20qualit%C3%A9%20de%20votre%20dossier", 
+                target = "_blank"
+              ),
+              " et de le valider via ",
+              a("Visale", href = "https://www.visale.fr/", target = "_blank"),
+              " pour garantir sa solvabilité. Ces documents peuvent être accompagnés de chiffres indicatifs pour évaluer sa capacité à payer son loyer."
+            ),
             # Critères financiers
             h4("1. Solvabilité financière"),
             p("Le locataire doit avoir des revenus stables et suffisants pour payer le loyer. Voici les indicateurs financiers à suivre :"),
@@ -979,14 +988,12 @@ server <- function(input, output, session) {
   
   output$telechargerExcel <- downloadHandler(
     filename = function() {
-      # Définir le type de régime en fonction du choix
       regime <- if (input$choix == "1") "LMNP_reel" else "Micro_foncier"
-      
-      # Utiliser le nom du bien comme nom du fichier avec le type de régime
-      paste(input$nom_bien, "_Comptabilité-", regime, "_", Sys.Date(), ".xlsx", sep = "")
+      nom_bien <- if (nzchar(input$nom_bien)) input$nom_bien else "MonBien"
+      nom_bien <- gsub("[^[:alnum:]_\\-]+", "_", nom_bien)
+      paste0(nom_bien, "_Comptabilite-", regime, "_", Sys.Date(), ".xlsx")
     },
     content = function(file) {
-      # Générer et afficher le dataset avant de le télécharger
       new_dataset <- creerDatasetCashflow(
         loyer_potentiel_hors_charge = input$loyer_potentiel_hors_charge, 
         charges_demandees_au_locataire = input$charges_demandees_au_locataire, 
@@ -1009,62 +1016,69 @@ server <- function(input, output, session) {
         cout_total_investissement = input$cout_total_investissement
       )
       
-      # Transposer le dataset
-      resultat_dataset_transpose(new_dataset)
-      
-      # Afficher le dataset dans l'interface utilisateur
-      output$resultatTable <- renderTable({
-        resultat_dataset_transpose()
-      }, rownames = TRUE, na = "")
-      
-      # Vérifier si le dataset est non vide avant de créer le fichier Excel
-      result <- resultat_dataset_transpose()
-      
-      if (nrow(result) > 0) {
-        result_with_row_names <- data.frame(Eléments = rownames(result), result)
-        
-        # Remplacer les NA par des chaînes vides ou des 0
-        result_with_row_names[is.na(result_with_row_names)] <- ""
-        
-        # Créer un fichier Excel avec openxlsx
-        wb <- createWorkbook()
-        addWorksheet(wb, "Resultats")
-        
-        # Appliquer des styles pour les nombres et les pourcentages
-        moneyStyle <- createStyle(numFmt = "€ #,##0.00")
-        percentStyle <- createStyle(numFmt = "0.00%")
-        
-        # Écrire les données dans la feuille Excel
-        writeData(wb, "Resultats", result_with_row_names)
-        writeData(wb, "Resultats", result_with_row_names, colWidths = "auto")
-        
-        numCols <- ncol(result_with_row_names)
-        numRows <- nrow(result_with_row_names) + 1
-        
-        # Sécurité sur les colonnes existantes
-        cols_money <- intersect(c(3:21, 23:25), 1:numCols)
-        cols_percent <- intersect(c(22, 26), 1:numCols)
-        
-        addStyle(wb, sheet = "Resultats", style = moneyStyle, rows = 2:numRows, cols = cols_money, gridExpand = TRUE)
-        addStyle(wb, sheet = "Resultats", style = percentStyle, rows = 2:numRows, cols = cols_percent, gridExpand = TRUE)
-        
-        # Nombre de lignes et colonnes du dataset
-        numRows <- nrow(result_with_row_names) + 1  # Inclure l'en-tête
-        numCols <- ncol(result_with_row_names)
-        
-        # Appliquer des formats spécifiques aux colonnes (monétaires et pourcentages)
-        if (numCols >= 26) {  # Vérifier que les colonnes existent
-          addStyle(wb, sheet = "Resultats", style = moneyStyle, rows = 2:numRows, cols = c(3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 23, 24, 25))
-          addStyle(wb, sheet = "Resultats", style = percentStyle, rows = 2:numRows, cols = c(22, 26))
-        }
-        
-        # Sauvegarder le fichier Excel dans l'emplacement spécifié
-        saveWorkbook(wb, file, overwrite = TRUE)
-      } else {
-        stop("Les données sont vides. Impossible de télécharger le fichier.")
+      if (is.null(new_dataset) || !is.data.frame(new_dataset) || nrow(new_dataset) == 0) {
+        stop("Aucune donnée à exporter.")
       }
+      
+      export_df <- data.frame(Elements = rownames(new_dataset), new_dataset, check.names = FALSE)
+      export_df[is.na(export_df)] <- ""
+      
+      wb <- createWorkbook()
+      addWorksheet(wb, "Resultats")
+      
+      # Titre et tableau (tableau commence en ligne 3)
+      regime_txt <- if (input$choix == "1") "LMNP réel" else "Micro-foncier"
+      writeData(wb, "Resultats", paste("Résultats - Régime :", regime_txt), startRow = 1, startCol = 1)
+      writeData(wb, "Resultats", export_df, startRow = 3, startCol = 1)
+      
+      # Largeur auto
+      setColWidths(wb, sheet = "Resultats", cols = 1:ncol(export_df), widths = "auto")
+      
+      # Styles
+      euroStyle    <- createStyle(numFmt = "€ #,##0.00")
+      percentStyle <- createStyle(numFmt = "0.00%")
+      numStyle     <- createStyle(numFmt = "#,##0.00")
+      headerStyle  <- createStyle(textDecoration = "bold")
+      
+      # Mettre l'en-tête en gras
+      addStyle(wb, "Resultats", headerStyle, rows = 3, cols = 1:ncol(export_df), gridExpand = TRUE)
+      
+      # Indices (décalage +2 lignes : header à 3, données dès 4)
+      data_row_start <- 4
+      data_row_end   <- nrow(export_df) + 3
+      
+      # Colonnes numériques
+      num_cols <- which(sapply(export_df, is.numeric))
+      
+      # Colonnes € et % (heuristique par nom), restreintes aux numériques
+      euro_cols <- intersect(num_cols, which(grepl("loyer|charges|frais|capital|taxe|cashflow|impot|cout|prix|montant",
+                                                   names(export_df), ignore.case = TRUE)))
+      pct_cols  <- intersect(num_cols, which(grepl("rentabilite|taux", names(export_df), ignore.case = TRUE)))
+      
+      # Appliquer € et %
+      if (length(euro_cols) > 0) {
+        addStyle(wb, "Resultats", euroStyle, rows = data_row_start:data_row_end,
+                 cols = euro_cols, gridExpand = TRUE, stack = TRUE)
+      }
+      if (length(pct_cols) > 0) {
+        addStyle(wb, "Resultats", percentStyle, rows = data_row_start:data_row_end,
+                 cols = pct_cols, gridExpand = TRUE, stack = TRUE)
+      }
+      
+      # Appliquer le format numérique générique aux autres colonnes numériques (sans écraser €/%)
+      remaining_num_cols <- setdiff(num_cols, c(euro_cols, pct_cols))
+      if (length(remaining_num_cols) > 0) {
+        addStyle(wb, "Resultats", numStyle, rows = data_row_start:data_row_end,
+                 cols = remaining_num_cols, gridExpand = TRUE, stack = TRUE)
+      }
+      
+      # Optionnel: figer les volets (ligne d'en-tête)
+      freezePane(wb, "Resultats", firstActiveRow = 4, firstActiveCol = 2)
+      
+      saveWorkbook(wb, file, overwrite = TRUE)
     }
   )
+  
   
   
   
@@ -1475,14 +1489,14 @@ server <- function(input, output, session) {
     city <- input$user_city
     
     if (nchar(city) > 0) {
-      paste0("Tu es un expert en investissement. Mon objectif est d'investir dans l'immobilier à moins d'une heure de ", city, 
+      paste0("Tu es un expert en investissement. Mon objectif est d'investir dans l'immobilier à moins deux heures de ", city, 
              " (inclus). Mon objectif est de trouver des biens offrant une rentabilité brute supérieure à 8 %. ",
              "La ville cible doit posséder une gare, avoir plus de 20 000 habitants (de préférence), avoir une croissance démographique positive, ",
              "un faible taux de chômage, et une forte demande locative (plus de 60 % de locataires). ",
              "Je m'intéresse particulièrement aux studios et T2 dans des quartiers en développement. ",
              "La rentabilité locative brute est calculée avec la formule suivante : ((Loyer mensuel brut x 12) / Prix d'achat) x 100. ",
-             "Merci de fournir un Top 10 des villes répondant à ces critères, avec la rentabilité brute médiane estimée pour le lieu, le prix au m2, la population, la qualité des locataires, la distance, ",
-             "l'évolution du marché et des suggestions d'investissement etc.. Dis la vérité, soit le plus réaliste possible et trie par rendement.")
+             "Merci de fournir un Top 10 des villes répondant à ces critères à la fois dans le neuf et dans l'ancien, avec la rentabilité brute médiane estimée pour le lieu, le prix au m2, la population, la qualité des locataires, la distance, ",
+             "l'évolution du marché et des suggestions d'investissement et de prêts à utiliser etc.. Dis la vérité, soit le plus réaliste possible et trie par rendement.")
     } else {
       "Merci d'indiquer une ville de référence pour votre recherche."
     }
